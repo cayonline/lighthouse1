@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Mentorship Lighthouse</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #001f3f;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 30px;
+    }
+
+    .lighthouse {
+      margin: 40px auto;
+      width: 150px;
+      height: 300px;
+      background: gray;
+      position: relative;
+      border-radius: 10px;
+    }
+
+    .light {
+      width: 200px;
+      height: 200px;
+      background: yellow;
+      border-radius: 50%;
+      position: absolute;
+      top: -100px;
+      left: -25px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      box-shadow: 0 0 100px yellow;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: orange;
+      color: white;
+    }
+
+    .counter {
+      font-size: 24px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Shine Your Light 🌟</h1>
+
+<div class="lighthouse">
+  <div class="light" id="light"></div>
+</div>
+
+<button onclick="shine()">Shine the Lighthouse</button>
+
+<div class="counter">
+  Total Contributions: <span id="count">0</span>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, set, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "PASTE_YOURS",
+    authDomain: "PASTE_YOURS",
+    databaseURL: "PASTE_YOURS",
+    projectId: "PASTE_YOURS",
+    storageBucket: "PASTE_YOURS",
+    messagingSenderId: "PASTE_YOURS",
+    appId: "PASTE_YOURS"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const countRef = ref(db, 'count');
+
+  const light = document.getElementById("light");
+  const countDisplay = document.getElementById("count");
+
+  onValue(countRef, (snapshot) => {
+    const count = snapshot.val() || 0;
+    countDisplay.textContent = count;
+
+    let intensity = Math.min(count / 50, 1);
+    light.style.opacity = intensity;
+  });
+
+  window.shine = function () {
+    runTransaction(countRef, (current) => {
+      return (current || 0) + 1;
+    });
+  }
+</script>
+
+</body>
+</html>
