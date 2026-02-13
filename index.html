@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IOP Summit – My Group</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f4f6;
+    padding: 20px;
+}
+.container {
+    max-width: 420px;
+    margin: auto;
+    background: #fff;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    text-align: center;
+}
+input, button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    margin-top: 12px;
+    border-radius: 6px;
+}
+input { border: 1px solid #ccc; }
+button {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+button:hover { background: #1e40af; }
+.result {
+    margin-top: 20px;
+    padding: 16px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    display: none;
+}
+.emoji {
+    font-size: 48px;
+}
+.error {
+    margin-top: 12px;
+    color: #b91c1c;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>Find My Group</h1>
+
+<input id="nameInput" placeholder="Enter your full name">
+<button onclick="findGroup()">MY GROUP</button>
+
+<div class="result" id="result">
+    <div class="emoji" id="emoji"></div>
+    <p><strong>Group:</strong> <span id="group"></span></p>
+    <p><strong>Group Name:</strong> <span id="groupName"></span></p>
+</div>
+
+<div class="error" id="error"></div>
+</div>
+
+<script>
+/* ===== ALL ROWS 1–116 ===== */
+const data = [
+{name:"John Narang",g:"1a",gn:"Airplane",e:"✈️"},
+{name:"MATTHEW LEE",g:"1a",gn:"Airplane",e:"✈️"},
+{name:"Elaine Lee",g:"1a",gn:"Airplane",e:"✈️"},
+{name:"Dennis Lam",g:"1a",gn:"Airplane",e:"✈️"},
+{name:"Eva Choi",g:"1a",gn:"Airplane",e:"✈️"},
+{name:"RICKY MAN",g:"1a",gn:"Airplane",e:"✈️"},
+{name:"MARK WATTS",g:"1a",gn:"Airplane",e:"✈️"},    
+{name:"Andrew Bailey",g:"1a",gn:"School Bus",e:"🚌"},
+{name:"Rosalinda Salvacion",g:"1a",gn:"School Bus",e:"🚌"},
+{name:"Dexter Poon",g:"1a",gn:"School Bus",e:"🚌"},
+{name:"CHERRY LUI",g:"1a",gn:"School Bus",e:"🚌"},
+{name:"VICTOR AU",g:"1a",gn:"School Bus",e:"🚌"},
+{name:"Chris Chan",g:"1a",gn:"School Bus",e:"🚌"},
+
+{name:"Lucy Mak",g:"1b",gn:"Ferry",e:"⛴️"},
+{name:"Julian Shiu",g:"1b",gn:"Ferry",e:"⛴️"},
+{name:"GARY NG",g:"1b",gn:"Ferry",e:"⛴️"},
+{name:"Sabrina Lau",g:"1b",gn:"Ferry",e:"⛴️"},
+{name:"Derek Chau",g:"1b",gn:"Ferry",e:"⛴️"},
+{name:"Robert Taylor",g:"1b",gn:"Ferry",e:"⛴️"},
+
+{name:"Cheuk Lo",g:"1b",gn:"High-Speed Train",e:"🚄"},
+{name:"Anita Lo",g:"1b",gn:"High-Speed Train",e:"🚄"},
+{name:"ALLAN LI",g:"1b",gn:"High-Speed Train",e:"🚄"},
+{name:"John Brownen",g:"1b",gn:"High-Speed Train",e:"🚄"},
+{name:"Thomas Chin",g:"1b",gn:"High-Speed Train",e:"🚄"},
+{name:"Fanny Chan",g:"1b",gn:"High-Speed Train",e:"🚄"},
+
+{name:"Tony Chun",g:"1c",gn:"Train",e:"🚆"},
+{name:"Suki Ng",g:"1c",gn:"Train",e:"🚆"},
+{name:"Osman Aviles",g:"1c",gn:"Train",e:"🚆"},
+{name:"Alan Tang",g:"1c",gn:"Train",e:"🚆"},
+{name:"Peonie Lo",g:"1c",gn:"Train",e:"🚆"},
+
+{name:"Justin Chan",g:"1c",gn:"Sailboat",e:"⛵"},
+{name:"AMIR BENNEGADI",g:"1c",gn:"Sailboat",e:"⛵"},
+{name:"Joseph Michael Baroque",g:"1c",gn:"Sailboat",e:"⛵"},
+{name:"PAUL VAN KESSEL",g:"1c",gn:"Sailboat",e:"⛵"},
+
+{name:"Jack Bennett",g:"2a",gn:"Ambulance",e:"🚑"},
+{name:"Aldric Chau",g:"2a",gn:"Ambulance",e:"🚑"},
+{name:"FANNY NIP",g:"2a",gn:"Ambulance",e:"🚑"},
+{name:"VIVIAN HUI",g:"2a",gn:"Ambulance",e:"🚑"},
+{name:"DEEPAK NAIR",g:"2a",gn:"Ambulance",e:"🚑"},
+{name:"Riva Man",g:"2a",gn:"Ambulance",e:"🚑"},    
+{name:"Clara Cao",g:"2a",gn:"Ambulance",e:"🚑"},    
+
+{name:"Tim Burns",g:"2a",gn:"Tuk Tuk",e:"🛺"},
+{name:"Anezka Chan",g:"2a",gn:"Tuk Tuk",e:"🛺"},
+{name:"ROY CHENG",g:"2a",gn:"Tuk Tuk",e:"🛺"},
+{name:"CHARLOTTE CHENG",g:"2a",gn:"Tuk Tuk",e:"🛺"},
+
+{name:"Vanessa Zhao",g:"2b",gn:"Bicycle",e:"🚲"},
+{name:"Chethan Puttur",g:"2b",gn:"Bicycle",e:"🚲"},
+{name:"CHERYL KWOK",g:"2b",gn:"Bicycle",e:"🚲"},
+{name:"Emerson Lai",g:"2b",gn:"Bicycle",e:"🚲"},
+{name:"Amy Lam",g:"2b",gn:"Bicycle",e:"🚲"},
+{name:"Claire Chen",g:"2b",gn:"Bicycle",e:"🚲"},    
+
+{name:"Priyatha Menon",g:"2b",gn:"Limousine",e:"🚘"},
+{name:"Akhil Vaidyanathan",g:"2b",gn:"Limousine",e:"🚘"},
+{name:"Roy Wong",g:"2b",gn:"Limousine",e:"🚘"},
+{name:"Stanley Or",g:"2b",gn:"Limousine",e:"🚘"},
+
+{name:"James Toye",g:"3a",gn:"Fire Truck",e:"🚒"},
+{name:"Munkuey Matungulu Four",g:"3a",gn:"Fire Truck",e:"🚒"},
+{name:"Yonnie Yu",g:"3a",gn:"Fire Truck",e:"🚒"},
+{name:"Rita Lee",g:"3a",gn:"Fire Truck",e:"🚒"},
+
+{name:"Maggie Wong",g:"3a",gn:"Hot Air Balloon",e:"🎈"},
+{name:"Andrew baird",g:"3a",gn:"Hot Air Balloon",e:"🎈"},
+{name:"Kevin Lau",g:"3a",gn:"Hot Air Balloon",e:"🎈"},
+{name:"Hayley Hunter",g:"3a",gn:"Hot Air Balloon",e:"🎈"},
+{name:"Keri Lui",g:"3a",gn:"Hot Air Balloon",e:"🎈"},
+{name:"Alan Kwok",g:"3a",gn:"Hot Air Balloon",e:"🎈"},
+{name:"Kingsley Birkett",g:"3a",gn:"Hot Air Balloon",e:"🎈"},    
+
+{name:"MARC PILMANN",g:"3a",gn:"Race Car",e:"🏎️"},
+{name:"Baris Sonmez",g:"3a",gn:"Race Car",e:"🏎️"},
+{name:"Lincoln Mak",g:"3a",gn:"Race Car",e:"🏎️"},
+{name:"Simon Tsang",g:"3a",gn:"Race Car",e:"🏎️"},
+{name:"Carrie So",g:"3a",gn:"Race Car",e:"🏎️"},
+
+{name:"Josh Rogers",g:"3a",gn:"Tractor",e:"🚜"},
+{name:"Ken Tong",g:"3a",gn:"Tractor",e:"🚜"},
+{name:"Clemen Lai",g:"3a",gn:"Tractor",e:"🚜"},
+{name:"Cartney Sum",g:"3a",gn:"Tractor",e:"🚜"},
+{name:"Leo Chan",g:"3a",gn:"Tractor",e:"🚜"},
+{name:"KK Chow",g:"3a",gn:"Tractor",e:"🚜"},    
+
+{name:"Philippe Christol",g:"3b",gn:"Cable Car",e:"🚡"},
+{name:"Jocelyn Wai",g:"3b",gn:"Cable Car",e:"🚡"},
+{name:"Matthew Wong",g:"3b",gn:"Cable Car",e:"🚡"},
+{name:"Paul Longhurst",g:"3b",gn:"Cable Car",e:"🚡"},
+{name:"Ricky Hung",g:"3b",gn:"Cable Car",e:"🚡"},
+{name:"CHRIS CHANG",g:"3b",gn:"Cable Car",e:"🚡"},
+
+{name:"Tony Lam",g:"3b",gn:"Helicopter",e:"🚁"},
+{name:"Gavin Haselmore",g:"3b",gn:"Helicopter",e:"🚁"},
+{name:"Glenn Devonport",g:"3b",gn:"Helicopter",e:"🚁"},
+{name:"Calvin Hui",g:"3b",gn:"Helicopter",e:"🚁"},
+{name:"Tony Pringle",g:"3b",gn:"Helicopter",e:"🚁"},
+{name:"Kelvin Tse",g:"3b",gn:"Helicopter",e:"🚁"},
+
+{name:"Pantelis Paspaliaris",g:"3b",gn:"Ice Cream Truck",e:"🍦🚚"},
+{name:"Max Mak",g:"3b",gn:"Ice Cream Truck",e:"🍦🚚"},
+{name:"Peter Sze",g:"3b",gn:"Ice Cream Truck",e:"🍦🚚"},
+{name:"Boris Wong",g:"3b",gn:"Ice Cream Truck",e:"🍦🚚"},
+{name:"Gary Chui",g:"3b",gn:"Ice Cream Truck",e:"🍦🚚"},
+{name:"Ruize Zhao",g:"3b",gn:"Ice Cream Truck",e:"🍦🚚"},
+
+{name:"Jacky Chu",g:"3b",gn:"Submarine",e:"🚢"},
+{name:"Carol Chan",g:"3b",gn:"Submarine",e:"🚢"},
+{name:"Tim Wong",g:"3b",gn:"Submarine",e:"🚢"},
+{name:"Michael Winner",g:"3b",gn:"Submarine",e:"🚢"},
+{name:"Kwong Wing Nip",g:"3b",gn:"Submarine",e:"🚢"},
+{name:"Derek Hui",g:"3b",gn:"Submarine",e:"🚢"},
+
+{name:"Lawrence Fong",g:"EXO",gn:"Rocket",e:"🚀"},
+{name:"Pierre Bastjaens",g:"EXO",gn:"Rocket",e:"🚀"},
+{name:"Agatha Lee",g:"EXO",gn:"Rocket",e:"🚀"},
+{name:"Peter Clemmow",g:"EXO",gn:"Rocket",e:"🚀"},
+
+{name:"Alex McGowan",g:"EXO",gn:"Space Shuttle",e:"🛰️"},
+{name:"Keith Brown",g:"EXO",gn:"Space Shuttle",e:"🛰️"},
+{name:"Chris Kempis",g:"EXO",gn:"Space Shuttle",e:"🛰️"},
+{name:"Mandy Ng",g:"EXO",gn:"Space Shuttle",e:"🛰️"},
+
+{name:"WALTER LI",g:"free",gn:"Not assigned",e:""},
+{name:"Thalia Ripoll",g:"",gn:"Not assigned",e:""},
+{name:"Daniel Bowron",g:"",gn:"Not assigned",e:""},
+{name:"Anne-Sophie Lee",g:"",gn:"Not assigned",e:""},
+{name:"Francesca To",g:"",gn:"Not assigned",e:""},
+{name:"Khusrau Islam",g:"",gn:"Not assigned",e:""},
+{name:"Francesca To",g:"",gn:"Not assigned",e:""}    
+];
+
+function findGroup() {
+    const input = document.getElementById("nameInput").value.trim().toLowerCase();
+    const result = document.getElementById("result");
+    const error = document.getElementById("error");
+    result.style.display = "none";
+    error.textContent = "";
+
+    if (!input) {
+        error.textContent = "Please enter your name.";
+        return;
+    }
+
+    const p = data.find(x => x.name.toLowerCase() === input);
+    if (!p) {
+        error.textContent = "Name not found. Please check spelling.";
+        return;
+    }
+
+    document.getElementById("group").textContent = p.g || "Not assigned";
+    document.getElementById("groupName").textContent = p.gn || "Not assigned";
+    document.getElementById("emoji").textContent = p.e || "✨";
+    result.style.display = "block";
+}
+</script>
+
+</body>
+</html>

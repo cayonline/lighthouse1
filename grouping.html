@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Group Finder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+
+    body {
+
+      font-family: system-ui, sans-serif;
+
+      background: #f3f4f6;
+
+      margin: 0;
+
+      padding: 2rem;
+
+      display: flex;
+
+      justify-content: center;
+
+      align-items: center;
+
+      height: 100vh;
+
+    }
+ 
+    .card {
+
+      background: white;
+
+      border-radius: 12px;
+
+      padding: 2rem;
+
+      width: 100%;
+
+      max-width: 420px;
+
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+
+      text-align: center;
+
+    }
+ 
+    input {
+
+      width: 100%;
+
+      font-size: 1rem;
+
+      padding: 0.8rem;
+
+      margin-bottom: 1rem;
+
+      border-radius: 8px;
+
+      border: 1px solid #ccc;
+
+    }
+ 
+    button {
+
+      font-size: 1rem;
+
+      background-color: #2563eb;
+
+      color: white;
+
+      border: none;
+
+      border-radius: 8px;
+
+      padding: 0.75rem 1.5rem;
+
+      cursor: pointer;
+
+    }
+ 
+    .result {
+
+      margin-top: 1.5rem;
+
+      font-size: 1.2rem;
+
+      font-weight: bold;
+
+      padding: 1rem;
+
+      border-radius: 1rem;
+
+      color: white;
+
+    }
+</style>
+</head>
+<body>
+<div class="card">
+<h2>Find Your Group</h2>
+<input id="nameInput" type="text" placeholder="Enter your full name" />
+<button onclick="findGroup()">Search</button>
+<div id="result" class="result"></div>
+</div>
+ 
+  <script>
+
+    const groupData = [
+
+      { name: 'Andrew Bailey', group: '1a - Helicopter', emoji: '🚁', color: '#6B8E23' },
+
+      { name: 'Elaine Lee', group: '1a - Helicopter', emoji: '🚁', color: '#6B8E23' },
+
+      { name: 'John Narang', group: '1a - Helicopter', emoji: '🚁', color: '#6B8E23' },
+
+      { name: 'Chris Chan', group: '1a - Helicopter', emoji: '🚁', color: '#6B8E23' },
+
+      { name: 'CHERRY LUI', group: '1a - Hot Air Balloon', emoji: '🎈', color: '#EF4444' },
+
+      { name: 'Rosalinda Salvacion', group: '1a - Hot Air Balloon', emoji: '🎈', color: '#EF4444' },
+
+      { name: 'Eva Choi', group: '1a - Hot Air Balloon', emoji: '🎈', color: '#EF4444' },
+
+      { name: 'Dennis Lam', group: '1a - Hot Air Balloon', emoji: '🎈', color: '#EF4444' }
+
+    ];
+ 
+    function findGroup() {
+
+      const inputName = document.getElementById("nameInput").value.trim().toLowerCase();
+
+      const resultBox = document.getElementById("result");
+ 
+      const found = groupData.find(entry => entry.name.toLowerCase() === inputName);
+ 
+      if (found) {
+
+        resultBox.style.backgroundColor = found.color;
+
+        resultBox.innerHTML = `${found.emoji} ${found.group}<br>${found.name}`;
+
+      } else if (inputName) {
+
+        resultBox.style.backgroundColor = "#f87171";
+
+        resultBox.innerHTML = "❌ Name not found";
+
+      } else {
+
+        resultBox.innerHTML = "";
+
+        resultBox.style.backgroundColor = "transparent";
+
+      }
+
+    }
+</script>
+</body>
+</html>
+ 
