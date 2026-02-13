@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Mentorship Lighthouse</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(#001f3f, #003366);
+      font-family: Arial, sans-serif;
+      text-align: center;
+      color: white;
+    }
+
+    h1 {
+      margin-top: 30px;
+      font-size: 2rem;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .lighthouse-wrapper {
+      position: relative;
+      margin: 50px auto;
+      width: 150px;
+      height: 300px;
+    }
+
+    .lighthouse {
+      width: 100%;
+      height: 100%;
+      background: #ccc;
+      border-radius: 10px;
+      position: relative;
+    }
+
+    .light {
+      width: 200px;
+      height: 200px;
+      background: yellow;
+      border-radius: 50%;
+      position: absolute;
+      top: -100px;
+      left: -25px;
+      opacity: 0;
+      box-shadow: 0 0 150px yellow;
+      transition: opacity 0.3s ease;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: orange;
+      color: white;
+      margin-top: 20px;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    .counter {
+      margin-top: 20px;
+      font-size: 22px;
+    }
+
+    .milestone {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #ffdd57;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Shine Your Light 🌟</h1>
+
+  <div class="lighthouse-wrapper">
+    <div class="light" id="light"></div>
+    <div class="lighthouse"></div>
+  </div>
+
+  <button onclick="shine()">Shine the Lighthouse</button>
+
+  <div class="counter">
+    Total Contributions: <span id="count">0</span>
+  </div>
+
+  <div class="milestone" id="milestone"></div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  // 🔥 PASTE YOUR FIREBASE CONFIG HERE
+  const firebaseConfig = {
+    apiKey: "PASTE_HERE",
+    authDomain: "PASTE_HERE",
+    databaseURL: "PASTE_HERE",
+    projectId: "PASTE_HERE",
+    storageBucket: "PASTE_HERE",
+    messagingSenderId: "PASTE_HERE",
+    appId: "PASTE_HERE"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const countRef = ref(db, 'count');
+
+  const light = document.getElementById("light");
+  const countDisplay = document.getElementById("count");
+  const milestoneDisplay = document.getElementById("milestone");
+
+  onValue(countRef, (snapshot) => {
+    const count = snapshot.val() || 0;
+    countDisplay.textContent = count;
+
+    // Light intensity
+    let intensity = Math.min(count / 100, 1);
+    light.style.opacity = intensity;
+
+    // Milestones
+    if (count >= 500) {
+      milestoneDisplay.textContent = "🌟 Mentorship Ignited!";
+    } else if (count >= 300) {
+      milestoneDisplay.textContent = "✨ The Beacon is Strong!";
+    } else if (count >= 100) {
+      milestoneDisplay.textContent = "🔥 The Light is Growing!";
+    } else {
+      milestoneDisplay.textContent = "";
+    }
+  });
+
+  window.shine = function () {
+    runTransaction(countRef, (current) => {
+      return (current || 0) + 1;
+    });
+  }
+</script>
+
+</body>
+</html>
