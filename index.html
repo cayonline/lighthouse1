@@ -165,409 +165,54 @@
   button:active{ transform:scale(0.96); }
 
   /* ==========================
-     Glitter (MAX only)
-     More + bigger + floating
+     BEAM: 360° ROTATION (MAX)
      ========================== */
 
-  /* A particle container that "wanders" (floating effect) */
+  /* Default state */
+  #beamGroup{
+    opacity: 0;
+  }
+
+  /* Continuous 360 sweep */
+  .beamSpin{
+    animation: beamSpin 3.4s linear infinite;
+  }
+  @keyframes beamSpin{
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  /* Subtle pulsing energy */
+  .beamPulse{
+    animation: beamPulse 1.15s ease-in-out infinite;
+  }
+  @keyframes beamPulse{
+    0%,100% { opacity: 0.78; }
+    50%     { opacity: 1; }
+  }
+
+  /* Big blast at MAX */
+  .beamBlast{
+    animation: beamBlast 900ms cubic-bezier(.2,.9,.2,1) 1;
+  }
+  @keyframes beamBlast{
+    0%   { opacity: 0; transform: rotate(0deg) scale(0.95); }
+    18%  { opacity: 1; transform: rotate(18deg) scale(1.10); }
+    60%  { opacity: 0.95; transform: rotate(48deg) scale(1.04); }
+    100% { opacity: 1; transform: rotate(60deg) scale(1.00); }
+  }
+
+  /* Beam layer tuning */
+  #beamGroup .beam.outer { opacity: 0.55; }
+  #beamGroup .beam.mid   { opacity: 0.60; }
+  #beamGroup .beam.core  { opacity: 0.98; mix-blend-mode: screen; }
+
+  /* ==========================
+     Glitter (MAX only) – dense + floating
+     ========================== */
+
   .gWrap{
     position:absolute;
     left:0; top:0;
     will-change: transform;
     animation: gWander var(--wanderDur) ease-in-out infinite alternate;
-    animation-delay: var(--wanderDelay);
-    filter: drop-shadow(0 0 18px rgba(255, 215, 0, .42));
-  }
-
-  /* Spark itself: shimmer + blink + slow spin */
-  .gSpark{
-    width: var(--size);
-    height: var(--size);
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,215,0,0.95) 28%, rgba(255,215,0,0) 70%);
-    box-shadow: 0 0 calc(var(--size) * 1.5) rgba(255, 215, 0, 0.55);
-    will-change: opacity, transform, filter;
-    animation:
-      gShimmer var(--shimDur) ease-in-out infinite,
-      gBlink   var(--blinkDur) steps(2, end) infinite,
-      gSpin    var(--spinDur) linear infinite;
-    animation-delay: var(--shimDelay), var(--blinkDelay), var(--spinDelay);
-  }
-
-  /* Star variant */
-  .gSpark.star{
-    border-radius:0;
-    clip-path: polygon(
-      50% 0%,
-      61% 35%,
-      98% 35%,
-      68% 57%,
-      79% 91%,
-      50% 70%,
-      21% 91%,
-      32% 57%,
-      2% 35%,
-      39% 35%
-    );
-    background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,220,120,0.95) 35%, rgba(255,215,0,0) 72%);
-    box-shadow: 0 0 calc(var(--size) * 1.9) rgba(255, 215, 0, 0.7);
-  }
-
-  @keyframes gWander{
-    0%   { transform: translate3d(0, 0, 0); opacity: 0.9; }
-    100% { transform: translate3d(var(--dx), var(--dy), 0); opacity: 1; }
-  }
-
-  @keyframes gShimmer{
-    0%,100% { opacity: 0.35; transform: scale(0.85); filter: brightness(0.95); }
-    50%     { opacity: 1;    transform: scale(1.20); filter: brightness(1.35); }
-  }
-
-  /* disappear + reappear loop */
-  @keyframes gBlink{
-    0%, 72%  { visibility: visible; }
-    73%, 100%{ visibility: hidden; }
-  }
-
-  @keyframes gSpin{
-    from{ transform: rotate(0deg); }
-    to  { transform: rotate(360deg); }
-  }
-
-  /* ==========================
-     One-time MAX burst particles
-     ========================== */
-  .burst{
-    position:absolute;
-    border-radius:50%;
-    background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,215,0,0.95) 28%, rgba(255,215,0,0) 70%);
-    box-shadow: 0 0 40px rgba(255,215,0,0.85);
-    will-change: transform, opacity;
-    animation: burstOut 950ms ease-out forwards;
-  }
-  @keyframes burstOut{
-    0%   { transform: translate3d(0,0,0) scale(0.6); opacity:0; }
-    18%  { opacity:1; }
-    100% { transform: translate3d(var(--bx), var(--by), 0) scale(1.25); opacity:0; }
-  }
-</style>
-</head>
-
-<body>
-
-<div id="impactFlash"></div>
-<div id="glitterLayer"></div>
-
-<div class="wrapper" id="wrap">
-
-  <div class="lighthouse" id="lh">
-    <svg viewBox="0 0 220 520" width="100%" height="100%" aria-label="Lighthouse power meter">
-
-      <defs>
-        <clipPath id="towerClip">
-          <path d="M78 470 L142 470 L128 150 L92 150 Z"></path>
-        </clipPath>
-
-        <linearGradient id="powerGradient" x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0%"  stop-color="#d19e1d"/>
-          <stop offset="55%" stop-color="#ffd86e"/>
-          <stop offset="100%" stop-color="#fff8d6"/>
-        </linearGradient>
-
-        <radialGradient id="lanternGlow" cx="50%" cy="50%" r="60%">
-          <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
-          <stop offset="40%" stop-color="#ffd86e" stop-opacity="0.75"/>
-          <stop offset="100%" stop-color="#ffd86e" stop-opacity="0"/>
-        </radialGradient>
-
-        <!-- Strong beam gradient -->
-        <linearGradient id="beamGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stop-color="#fff8d6" stop-opacity="0.0"/>
-          <stop offset="22%"  stop-color="#fff3b0" stop-opacity="0.85"/>
-          <stop offset="55%"  stop-color="#ffd86e" stop-opacity="0.75"/>
-          <stop offset="100%" stop-color="#ffd86e" stop-opacity="0.0"/>
-        </linearGradient>
-
-        <!-- Beam glow using Gaussian blur -->
-        <filter id="beamGlow" x="-40%" y="-40%" width="180%" height="180%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="8" />
-        </filter>
-      </defs>
-
-      <!-- Ground shadow -->
-      <ellipse cx="110" cy="495" rx="90" ry="18" fill="rgba(255,255,255,0.06)"/>
-
-      <!-- Beam glow layer (bigger + blurred) -->
-      <path id="beamGlowPath"
-            d="M140 122
-               L220 95
-               L220 162
-               L140 146 Z"
-            fill="url(#beamGrad)" opacity="0"
-            filter="url(#beamGlow)"
-            style="transform-box: fill-box; transform-origin: 0% 50%;"/>
-
-      <!-- Beam core layer -->
-      <path id="beamCore"
-            d="M140 128
-               L215 105
-               L215 150
-               L140 140 Z"
-            fill="url(#beamGrad)" opacity="0"
-            style="transform-box: fill-box; transform-origin: 0% 50%;"/>
-
-      <!-- Base platform -->
-      <path d="M55 470 H165 L175 505 H45 Z" fill="#2a2a2a" opacity="0.95"/>
-      <path d="M55 470 H165" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
-
-      <!-- Tower body -->
-      <path d="M78 470 L142 470 L128 150 L92 150 Z" fill="#f2f2f2"/>
-      <path d="M78 470 L142 470 L128 150 L92 150 Z" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="2"/>
-
-      <!-- Power fill (smooth scaleY) -->
-      <rect id="powerFill" x="78" y="150" width="64" height="320"
-            clip-path="url(#towerClip)"
-            fill="url(#powerGradient)" opacity="0.95"
-            style="
-              transform-box: fill-box;
-              transform-origin: 50% 100%;
-              transform: scaleY(0);
-              transition: transform 220ms ease-out;
-            "/>
-
-      <!-- Stripes -->
-      <rect x="83" y="355" width="54" height="22" fill="#ffcc33" opacity="0.95"/>
-      <rect x="83" y="300" width="54" height="22" fill="#ffcc33" opacity="0.95"/>
-      <rect x="83" y="245" width="54" height="22" fill="#ffcc33" opacity="0.95"/>
-
-      <!-- Windows -->
-      <rect x="104" y="205" width="12" height="20" rx="6" fill="#111"/>
-      <rect x="102" y="375" width="16" height="26" rx="8" fill="#111"/>
-
-      <!-- Door -->
-      <path d="M98 470 V430 C98 416 122 416 122 430 V470 Z" fill="#1c1c1c"/>
-      <circle cx="118" cy="448" r="2.2" fill="#ffdf6e" opacity="0.4"/>
-
-      <!-- Balcony ring -->
-      <path d="M72 150 H148" stroke="#444" stroke-width="10" stroke-linecap="round"/>
-      <path d="M72 150 H148" stroke="rgba(255,255,255,0.18)" stroke-width="2" stroke-linecap="round"/>
-
-      <!-- Lantern house -->
-      <rect x="78" y="110" width="64" height="45" rx="8" fill="#222"/>
-      <rect x="86" y="118" width="48" height="29" rx="6" fill="#111"/>
-
-      <!-- Roof / cap -->
-      <path d="M70 110 H150 L135 78 H85 Z" fill="#c7332e"/>
-      <path d="M85 78 H135" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
-
-      <!-- Top light -->
-      <circle id="topLight" cx="110" cy="132" r="12" fill="#ffffff"/>
-      <circle id="topGlow" cx="110" cy="132" r="34" fill="url(#lanternGlow)" opacity="0.05"/>
-
-      <!-- Small antenna -->
-      <rect x="108" y="55" width="4" height="25" fill="#333"/>
-      <circle cx="110" cy="52" r="6" fill="#333"/>
-
-    </svg>
-  </div>
-
-  <!-- Level bar under lighthouse -->
-  <div class="levelWrap">
-    <div class="levelHeader">
-      <div>Power Level</div>
-      <div id="levelPct">0%</div>
-    </div>
-
-    <div class="barOuter" aria-label="power progress bar">
-      <div id="barInner" class="barInner"></div>
-      <div class="barCap">MAX</div>
-    </div>
-
-    <div class="levelFooter" id="levelHint">Keep clicking to charge 🌙</div>
-  </div>
-
-  <button onclick="lightUp()">LIGHT UP ✨</button>
-
-</div>
-
-<script>
-  let energy = 0;
-  const maxEnergy = 100;
-  let glitterStarted = false;
-
-  function lightUp(){
-    if(energy < maxEnergy){
-      energy += 5;
-      if(energy > maxEnergy) energy = maxEnergy;
-      updatePower();
-    }
-
-    // MAX moment (only once)
-    if(energy >= maxEnergy && !glitterStarted){
-      glitterStarted = true;
-      document.getElementById("levelHint").textContent = "MAX power reached! 🌟";
-      triggerMaxImpact();
-      startGlitterField();      // huge floating glitter field
-      burstSparkleExplosion();  // one-time blast
-    }
-  }
-
-  function updatePower(){
-    const percent = energy / maxEnergy;
-    const pctText = Math.round(percent * 100);
-
-    // Smooth tower fill
-    document.getElementById("powerFill").style.transform = `scaleY(${percent})`;
-
-    // Glow ramps up
-    const glowPx = 10 + percent * 90;
-    document.getElementById("lh").style.filter =
-      `drop-shadow(0 0 ${glowPx}px rgba(255,215,0,${0.10 + percent*0.70}))`;
-
-    // Lantern warms + glow increases
-    const topLight = document.getElementById("topLight");
-    const topGlow  = document.getElementById("topGlow");
-    topLight.setAttribute("fill", percent > 0.12 ? "#fff3b0" : "#ffffff");
-    topGlow.style.opacity = (0.03 + percent * 0.75).toFixed(2);
-
-    // Pre-max beam is subtle
-    const beamCore = document.getElementById("beamCore");
-    const beamGlow = document.getElementById("beamGlowPath");
-    const beamOpacity = Math.max(0, (percent - 0.25)) * 0.35;
-    beamCore.style.opacity = Math.min(0.25, beamOpacity).toFixed(2);
-    beamGlow.style.opacity = Math.min(0.15, beamOpacity * 0.8).toFixed(2);
-
-    // Progress bar
-    document.getElementById("barInner").style.width = pctText + "%";
-    document.getElementById("levelPct").textContent = pctText + "%";
-  }
-
-  /* Strong "WOW" impact at MAX */
-  function triggerMaxImpact(){
-    // Screen flash
-    const flash = document.getElementById("impactFlash");
-    flash.classList.remove("flash");
-    void flash.offsetWidth; // restart animation
-    flash.classList.add("flash");
-
-    // Small shake
-    const wrap = document.getElementById("wrap");
-    wrap.classList.remove("shakeOnce");
-    void wrap.offsetWidth;
-    wrap.classList.add("shakeOnce");
-
-    // Beam BLAST (flash + widen + pulse)
-    const core = document.getElementById("beamCore");
-    const glow = document.getElementById("beamGlowPath");
-
-    core.animate([
-      { opacity: 0.2, transform: "scaleX(1) skewX(0deg)" },
-      { opacity: 1.0, transform: "scaleX(1.65) skewX(-6deg)" },
-      { opacity: 0.6, transform: "scaleX(1.25) skewX(-3deg)" }
-    ], { duration: 900, easing: "cubic-bezier(.2,.9,.2,1)" });
-
-    glow.animate([
-      { opacity: 0.15, transform: "scaleX(1) skewX(0deg)" },
-      { opacity: 0.95, transform: "scaleX(2.05) skewX(-8deg)" },
-      { opacity: 0.45, transform: "scaleX(1.55) skewX(-4deg)" }
-    ], { duration: 900, easing: "cubic-bezier(.2,.9,.2,1)" });
-
-    // Keep a strong steady beam after the blast
-    setTimeout(() => {
-      core.style.opacity = "0.55";
-      glow.style.opacity = "0.40";
-    }, 880);
-  }
-
-  /* Huge floating glitter field (fills screen) */
-  function startGlitterField(){
-    const layer = document.getElementById("glitterLayer");
-    layer.innerHTML = "";
-
-    const count = 220; // MORE density
-
-    for(let i=0;i<count;i++){
-      const wrap = document.createElement("div");
-      wrap.className = "gWrap";
-
-      const spark = document.createElement("div");
-      spark.className = "gSpark" + (Math.random() < 0.42 ? " star" : "");
-
-      // Start positions: full screen
-      wrap.style.left = (Math.random() * window.innerWidth) + "px";
-      wrap.style.top  = (Math.random() * window.innerHeight) + "px";
-
-      // Much larger range
-      const size = (Math.random() < 0.45)
-        ? (16 + Math.random()*22)   // medium sparkles
-        : (30 + Math.random()*46);  // BIG glow orbs
-
-      wrap.style.setProperty("--size", size + "px");
-
-      // Floating movement (wandering)
-      wrap.style.setProperty("--dx", ((Math.random()-0.5) * 160).toFixed(0) + "px");
-      wrap.style.setProperty("--dy", ((Math.random()-0.5) * 140).toFixed(0) + "px");
-      wrap.style.setProperty("--wanderDur", (2.3 + Math.random()*4.5).toFixed(2) + "s");
-      wrap.style.setProperty("--wanderDelay", (-Math.random()*6).toFixed(2) + "s");
-
-      // Shimmer
-      wrap.style.setProperty("--shimDur", (0.75 + Math.random()*1.4).toFixed(2) + "s");
-      wrap.style.setProperty("--shimDelay", (-Math.random()*3).toFixed(2) + "s");
-
-      // Disappear/reappear
-      wrap.style.setProperty("--blinkDur", (2.2 + Math.random()*4.8).toFixed(2) + "s");
-      wrap.style.setProperty("--blinkDelay", (-Math.random()*7).toFixed(2) + "s");
-
-      // Spin
-      wrap.style.setProperty("--spinDur", (2.2 + Math.random()*7.0).toFixed(2) + "s");
-      wrap.style.setProperty("--spinDelay", (-Math.random()*6).toFixed(2) + "s");
-
-      wrap.appendChild(spark);
-      layer.appendChild(wrap);
-    }
-  }
-
-  /* One-time explosion burst (centered near lighthouse top) */
-  function burstSparkleExplosion(){
-    const layer = document.getElementById("glitterLayer");
-
-    const centerX = window.innerWidth * 0.5;
-    const centerY = window.innerHeight * 0.43;
-
-    const burstCount = 70; // extra impact
-    for(let i=0;i<burstCount;i++){
-      const b = document.createElement("div");
-      b.className = "burst";
-
-      const size = 18 + Math.random()*42;
-      b.style.width = size + "px";
-      b.style.height = size + "px";
-
-      b.style.left = centerX + "px";
-      b.style.top  = centerY + "px";
-
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 160 + Math.random()*520;
-
-      const bx = Math.cos(angle) * dist;
-      const by = Math.sin(angle) * dist;
-
-      b.style.setProperty("--bx", bx.toFixed(0) + "px");
-      b.style.setProperty("--by", by.toFixed(0) + "px");
-
-      layer.appendChild(b);
-      setTimeout(() => b.remove(), 1100);
-    }
-  }
-
-  // Initialize
-  updatePower();
-
-  // Resize: keep glitter coverage
-  window.addEventListener("resize", () => {
-    if(glitterStarted) startGlitterField();
-  });
-</script>
-
-</body>
-</html>
