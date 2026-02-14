@@ -5,9 +5,17 @@
 <title>Lighthouse Power</title>
 
 <style>
-body{
+  :root{
+    --gold1:#d19e1d;
+    --gold2:#ffd86e;
+    --gold3:#e3a812;
+    --warm:#fff3b0;
+    --bg:#000;
+  }
+
+  body{
     margin:0;
-    background:black;
+    background: radial-gradient(ellipse at center, #0b0b0b 0%, #000 55%, #000 100%);
     overflow:hidden;
     font-family:Arial, sans-serif;
     display:flex;
@@ -16,66 +24,167 @@ body{
     justify-content:center;
     height:100vh;
     color:white;
-}
+  }
 
-/* Wrapper spacing adjusted */
-.wrapper{
+  .wrapper{
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    gap:25px; /* smaller gap so button moves up */
-}
+    gap:14px;
+    width:min(520px, 92vw);
+  }
 
-/* Glitter Layer */
-#glitterLayer{
+  /* Glitter Layer */
+  #glitterLayer{
     position:fixed;
     width:100%;
     height:100%;
     top:0;
     left:0;
     pointer-events:none;
-}
+  }
 
-/* Flowing Glitter */
-.glitter{
+  /* Glitter particles */
+  .glitter{
     position:absolute;
-    border-radius:50%;
     opacity:0.95;
-    animation:moveParticle 5s linear forwards;
-}
+    animation:
+      moveParticle 4.2s linear forwards,
+      twinkle 0.9s ease-in-out infinite;
+    filter: drop-shadow(0 0 18px rgba(255, 215, 0, .55));
+    will-change: transform, opacity;
+  }
 
-@keyframes moveParticle{
-    from{
-        transform:translate(0,0);
-        opacity:1;
-    }
-    to{
-        transform:translate(var(--x), var(--y));
-        opacity:0;
-    }
-}
+  /* Round glow */
+  .glitter.round{
+    border-radius:50%;
+  }
 
-/* Lighthouse */
-.lighthouse{
-    width:280px;
-    height:450px;
-}
+  /* Star sparkle */
+  .glitter.star{
+    width: 22px; height: 22px;
+    background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,215,0,0.95) 35%, rgba(255,215,0,0) 70%);
+    clip-path: polygon(
+      50% 0%,
+      61% 35%,
+      98% 35%,
+      68% 57%,
+      79% 91%,
+      50% 70%,
+      21% 91%,
+      32% 57%,
+      2% 35%,
+      39% 35%
+    );
+  }
 
-/* Button */
-button{
+  @keyframes moveParticle{
+    from{ transform:translate(0,0) scale(1); opacity:1; }
+    to  { transform:translate(var(--x), var(--y)) scale(0.85); opacity:0; }
+  }
+
+  @keyframes twinkle{
+    0%,100%{ transform:translate(var(--tx,0), var(--ty,0)) scale(0.92); opacity:0.70; }
+    50%    { transform:translate(var(--tx,0), var(--ty,0)) scale(1.08); opacity:1; }
+  }
+
+  /* Lighthouse sizing (bigger + responsive) */
+  .lighthouse{
+    width: clamp(320px, 42vw, 420px);
+    height: clamp(520px, 62vh, 640px);
+  }
+
+  /* Progress / level bar under lighthouse */
+  .levelWrap{
+    width: min(440px, 86vw);
+    margin-top: 4px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    align-items:stretch;
+  }
+
+  .levelHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:14px;
+    opacity:0.92;
+    letter-spacing:0.2px;
+  }
+
+  .barOuter{
+    position:relative;
+    height: 16px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12),
+                inset 0 2px 10px rgba(0,0,0,0.55);
+    overflow:hidden;
+  }
+
+  .barOuter::after{
+    /* subtle tick marks */
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      repeating-linear-gradient(
+        to right,
+        rgba(255,255,255,0.22) 0px,
+        rgba(255,255,255,0.22) 1px,
+        rgba(0,0,0,0) 1px,
+        rgba(0,0,0,0) 44px
+      );
+    opacity:0.25;
+    pointer-events:none;
+  }
+
+  .barInner{
+    height:100%;
+    width:0%;
+    border-radius:999px;
+    background: linear-gradient(to right, var(--gold1), var(--gold2), var(--gold3));
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.55);
+    transition: width 180ms ease-out;
+  }
+
+  .barCap{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    right:8px;
+    font-size:11px;
+    opacity:0.8;
+  }
+
+  .levelFooter{
+    text-align:center;
+    font-size:13px;
+    opacity:0.92;
+  }
+
+  /* Button */
+  button{
     padding:16px 40px;
     font-size:18px;
     font-weight:bold;
     border:none;
     border-radius:40px;
-    background:linear-gradient(to right,#00ffff,#00aaff);
+    background: linear-gradient(to right, #ffdf6e, #ffb300);
+    color:#1a1400;
     cursor:pointer;
-}
+    box-shadow: 0 10px 30px rgba(255, 179, 0, 0.18);
+  }
 
-button:active{
-    transform:scale(0.95);
-}
+  button:active{ transform:scale(0.96); }
+
+  /* optional: little glow around entire lighthouse when charging */
+  .glow{
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.25));
+    transition: filter 200ms ease;
+  }
 </style>
 </head>
 
@@ -85,128 +194,240 @@ button:active{
 
 <div class="wrapper">
 
-<div class="lighthouse">
-<svg viewBox="0 0 200 400" width="100%" height="100%">
+  <div class="lighthouse glow">
+    <svg viewBox="0 0 220 520" width="100%" height="100%" aria-label="Lighthouse power meter">
 
-    <defs>
+      <defs>
+        <!-- Tower clip so the power fill stays inside the tower shape -->
+        <clipPath id="towerClip">
+          <path d="M78 470 L142 470 L128 150 L92 150 Z"></path>
+        </clipPath>
+
+        <!-- Warm gold fill (power) -->
         <linearGradient id="powerGradient" x1="0" y1="1" x2="0" y2="0">
-            <stop offset="0%" stop-color="#00ffff"/>
-            <stop offset="100%" stop-color="#ffffff"/>
+          <stop offset="0%"  stop-color="#d19e1d"/>
+          <stop offset="55%" stop-color="#ffd86e"/>
+          <stop offset="100%" stop-color="#fff8d6"/>
         </linearGradient>
-    </defs>
 
-    <!-- Tower -->
-    <path d="M70 380 L130 380 L120 150 L80 150 Z"
-          fill="#eeeeee"/>
+        <!-- Soft lantern glow -->
+        <radialGradient id="lanternGlow" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+          <stop offset="40%" stop-color="#ffd86e" stop-opacity="0.75"/>
+          <stop offset="100%" stop-color="#ffd86e" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
 
-    <!-- Power fill -->
-    <rect id="powerFill" x="80" y="380" width="40" height="0"
-          fill="url(#powerGradient)" opacity="0.9"/>
+      <!-- Ground shadow -->
+      <ellipse cx="110" cy="495" rx="90" ry="18" fill="rgba(255,255,255,0.06)"/>
 
-    <!-- Stripes -->
-    <rect x="70" y="250" width="60" height="20" fill="#00ffff"/>
-    <rect x="70" y="200" width="60" height="20" fill="#00ffff"/>
+      <!-- Base platform -->
+      <path d="M55 470 H165 L175 505 H45 Z" fill="#2a2a2a" opacity="0.95"/>
+      <path d="M55 470 H165" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
 
-    <!-- Lantern -->
-    <rect x="60" y="120" width="80" height="40" fill="#222"/>
-    <circle id="topLight" cx="100" cy="140" r="15"
-            fill="#ffffff"/>
+      <!-- Tower body -->
+      <path d="M78 470 L142 470 L128 150 L92 150 Z"
+            fill="#f2f2f2"/>
+      <path d="M78 470 L142 470 L128 150 L92 150 Z"
+            fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="2"/>
 
-</svg>
-</div>
+      <!-- Power fill (clipped to tower) -->
+      <rect id="powerFill" x="78" y="470" width="64" height="0"
+            clip-path="url(#towerClip)"
+            fill="url(#powerGradient)" opacity="0.95"/>
 
-<button onclick="lightUp()">LIGHT UP ✨</button>
+      <!-- Stripes -->
+      <rect x="83" y="355" width="54" height="22" fill="#ffcc33" opacity="0.95"/>
+      <rect x="83" y="300" width="54" height="22" fill="#ffcc33" opacity="0.95"/>
+      <rect x="83" y="245" width="54" height="22" fill="#ffcc33" opacity="0.95"/>
+
+      <!-- Windows -->
+      <rect x="104" y="205" width="12" height="20" rx="6" fill="#111"/>
+      <rect x="102" y="375" width="16" height="26" rx="8" fill="#111"/>
+
+      <!-- Door -->
+      <path d="M98 470 V430
+               C98 416 122 416 122 430
+               V470 Z" fill="#1c1c1c"/>
+      <circle cx="118" cy="448" r="2.2" fill="#ffdf6e" opacity="0.8"/>
+
+      <!-- Balcony ring -->
+      <path d="M72 150 H148" stroke="#444" stroke-width="10" stroke-linecap="round"/>
+      <path d="M72 150 H148" stroke="rgba(255,255,255,0.18)" stroke-width="2" stroke-linecap="round"/>
+
+      <!-- Lantern house -->
+      <rect x="78" y="110" width="64" height="45" rx="8" fill="#222"/>
+      <rect x="86" y="118" width="48" height="29" rx="6" fill="#111"/>
+      <rect x="90" y="122" width="40" height="21" rx="6" fill="#1a1a1a"/>
+
+      <!-- Roof / cap -->
+      <path d="M70 110 H150 L135 78 H85 Z" fill="#c7332e"/>
+      <path d="M85 78 H135" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
+
+      <!-- Top light (changes via JS) -->
+      <circle id="topLight" cx="110" cy="132" r="12" fill="#ffffff"/>
+      <circle id="topGlow" cx="110" cy="132" r="34" fill="url(#lanternGlow)" opacity="0.10"/>
+
+      <!-- Small antenna -->
+      <rect x="108" y="55" width="4" height="25" fill="#333"/>
+      <circle cx="110" cy="52" r="6" fill="#333"/>
+
+    </svg>
+  </div>
+
+  <!-- Level bar under lighthouse -->
+  <div class="levelWrap">
+    <div class="levelHeader">
+      <div id="levelTitle">Power Level</div>
+      <div id="levelPct">0%</div>
+    </div>
+
+    <div class="barOuter" aria-label="power progress bar">
+      <div id="barInner" class="barInner"></div>
+      <div class="barCap">MAX</div>
+    </div>
+
+    <div class="levelFooter" id="levelHint">Click LIGHT UP to charge ⚡</div>
+  </div>
+
+  <button onclick="lightUp()">LIGHT UP ✨</button>
 
 </div>
 
 <script>
-let energy = 0;
-let maxEnergy = 100;
-let glitterStarted = false;
+  let energy = 0;
+  const maxEnergy = 100;
+  let glitterStarted = false;
 
-/* Rainbow color palette */
-const colors = [
-    "#00ffff", // cyan
+  // Gold / yellow heavy palette
+  const colors = [
     "#ffd700", // gold
-    "#ff4dff", // pink
-    "#a64dff", // purple
-    "#3399ff", // blue
-    "#ff9933", // orange
-    "#ffffff"  // white
-];
+    "#ffec8b", // light gold
+    "#ffb300", // amber
+    "#fff3b0", // warm white
+    "#ffe066", // soft yellow
+    "#ffffff"  // sparkle white
+  ];
 
-function lightUp(){
-
+  function lightUp(){
     if(energy < maxEnergy){
-        energy += 5;
-        if(energy > maxEnergy) energy = maxEnergy;
-        updatePower();
+      energy += 5;
+      if(energy > maxEnergy) energy = maxEnergy;
+      updatePower();
+
+      // Small sparkle burst on every click so progress feels responsive
+      createParticles(6, true);
     }
 
     if(energy >= maxEnergy && !glitterStarted){
-        glitterStarted = true;
-        startGlitterStorm();
+      glitterStarted = true;
+      startGlitterStorm();
+      document.getElementById("levelHint").textContent = "MAX power reached! 🌟";
     }
-}
+  }
 
-function updatePower(){
+  function updatePower(){
+    const percent = energy / maxEnergy;
 
-    let percent = energy / maxEnergy;
-    let fillHeight = 230 * percent;
-    let fillY = 380 - fillHeight;
+    // Tower fill geometry: tower interior height is ~320px (from y=470 down to y=150)
+    const towerHeight = 320;
+    const fillHeight = towerHeight * percent;
+    const fillY = 470 - fillHeight;
 
-    let fill = document.getElementById("powerFill");
+    const fill = document.getElementById("powerFill");
     fill.setAttribute("height", fillHeight);
     fill.setAttribute("y", fillY);
 
-    document.querySelector(".lighthouse svg")
-        .style.filter =
-        "drop-shadow(0 0 " + (20 + percent*80) + "px rgba(0,255,255," + (0.5+percent*0.5) + "))";
-}
+    // Lighthouse glow increases with percent
+    const glowPx = 18 + percent * 75;
+    document.querySelector(".lighthouse")
+      .style.filter = `drop-shadow(0 0 ${glowPx}px rgba(255,215,0,${0.18 + percent*0.55}))`;
 
-/* Glitter from all directions */
-function startGlitterStorm(){
+    // Lantern color + glow
+    const topLight = document.getElementById("topLight");
+    const topGlow  = document.getElementById("topGlow");
+    topLight.setAttribute("fill", percent > 0.15 ? "#fff3b0" : "#ffffff");
+    topGlow.style.opacity = (0.08 + percent * 0.55).toFixed(2);
 
-    setInterval(()=>{
-        createParticles(10);
-    },200);
-}
+    // Progress bar + labels
+    const pctText = Math.round(percent * 100);
+    document.getElementById("barInner").style.width = pctText + "%";
+    document.getElementById("levelPct").textContent = pctText + "%";
 
-function createParticles(amount){
+    const clicksLeft = Math.ceil((maxEnergy - energy) / 5);
+    document.getElementById("levelHint").textContent =
+      energy >= maxEnergy
+        ? "MAX power reached! 🌟"
+        : `${energy}/${maxEnergy} • ${clicksLeft} click${clicksLeft===1?"":"s"} to MAX`;
+  }
 
-    let layer = document.getElementById("glitterLayer");
+  function startGlitterStorm(){
+    // More intense storm at MAX
+    setInterval(() => {
+      createParticles(18, false);
+    }, 140);
+  }
 
-    for(let i=0;i<amount;i++){
+  // fromClick: tighter spread; storm: wider spread
+  function createParticles(amount, fromClick){
+    const layer = document.getElementById("glitterLayer");
 
-        let size = 20 + Math.random()*40;
-        let color = colors[Math.floor(Math.random()*colors.length)];
+    for(let i=0; i<amount; i++){
+      const isStar = Math.random() < 0.45;
 
-        let p = document.createElement("div");
-        p.className = "glitter";
+      const p = document.createElement("div");
+      p.className = "glitter " + (isStar ? "star" : "round");
 
-        p.style.width = size+"px";
-        p.style.height = size+"px";
-        p.style.background = "radial-gradient(circle,"+color+",transparent)";
-        p.style.boxShadow = "0 0 35px "+color;
+      const size = isStar
+        ? (18 + Math.random()*26)
+        : (28 + Math.random()*58); // bigger rounds
 
-        let startX = Math.random()*window.innerWidth;
-        let startY = Math.random()*window.innerHeight;
+      if(!isStar){
+        const color = colors[Math.floor(Math.random()*colors.length)];
+        p.style.width = size + "px";
+        p.style.height = size + "px";
+        p.style.background = `radial-gradient(circle, ${color} 0%, rgba(255,215,0,0.55) 35%, transparent 70%)`;
+        p.style.boxShadow = `0 0 ${22 + size}px rgba(255, 215, 0, 0.55)`;
+      }else{
+        p.style.width = size + "px";
+        p.style.height = size + "px";
+        p.style.boxShadow = `0 0 ${18 + size}px rgba(255, 215, 0, 0.6)`;
+      }
 
-        p.style.left = startX + "px";
-        p.style.top = startY + "px";
+      // Start position: random, but slightly biased around lighthouse area for click bursts
+      const startX = fromClick
+        ? (window.innerWidth * 0.5) + (Math.random()-0.5)*240
+        : Math.random()*window.innerWidth;
 
-        let moveX = (Math.random()-0.5)*700;
-        let moveY = (Math.random()-0.5)*700;
+      const startY = fromClick
+        ? (window.innerHeight * 0.45) + (Math.random()-0.5)*240
+        : Math.random()*window.innerHeight;
 
-        p.style.setProperty('--x', moveX+"px");
-        p.style.setProperty('--y', moveY+"px");
+      p.style.left = startX + "px";
+      p.style.top = startY + "px";
 
-        layer.appendChild(p);
+      // Movement
+      const spread = fromClick ? 520 : 820;
+      const moveX = (Math.random()-0.5) * spread;
+      const moveY = (Math.random()-0.5) * spread;
 
-        setTimeout(()=>p.remove(),5000);
+      p.style.setProperty("--x", moveX + "px");
+      p.style.setProperty("--y", moveY + "px");
+
+      // twinkle offsets so they don't sync
+      p.style.setProperty("--tx", (Math.random()-0.5)*10 + "px");
+      p.style.setProperty("--ty", (Math.random()-0.5)*10 + "px");
+
+      layer.appendChild(p);
+
+      setTimeout(() => p.remove(), 4300);
     }
-}
+  }
+
+  // Initialize display
+  updatePower();
 </script>
 
 </body>
 </html>
+``
