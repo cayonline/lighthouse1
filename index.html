@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lighthouse Power</title>
 
@@ -150,7 +151,6 @@
     opacity:0.92;
   }
 
-  /* Button */
   button{
     padding:16px 40px;
     font-size:18px;
@@ -165,50 +165,44 @@
   button:active{ transform:scale(0.96); }
 
   /* ==========================
-     BEAM: 360° ROTATION (MAX)
+     BEAM: FIXED animation stacking
      ========================== */
 
-  /* Default state */
-  #beamGroup{
-    opacity: 0;
-  }
+  #beamGroup{ opacity: 0; }
 
-  /* Continuous 360 sweep */
-  .beamSpin{
-    animation: beamSpin 3.4s linear infinite;
-  }
-  @keyframes beamSpin{
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-
-  /* Subtle pulsing energy */
-  .beamPulse{
-    animation: beamPulse 1.15s ease-in-out infinite;
-  }
-  @keyframes beamPulse{
-    0%,100% { opacity: 0.78; }
-    50%     { opacity: 1; }
-  }
-
-  /* Big blast at MAX */
+  /* One-time blast at MAX */
   .beamBlast{
     animation: beamBlast 900ms cubic-bezier(.2,.9,.2,1) 1;
   }
   @keyframes beamBlast{
     0%   { opacity: 0; transform: rotate(0deg) scale(0.95); }
-    18%  { opacity: 1; transform: rotate(18deg) scale(1.10); }
-    60%  { opacity: 0.95; transform: rotate(48deg) scale(1.04); }
+    18%  { opacity: 1; transform: rotate(18deg) scale(1.12); }
+    60%  { opacity: 0.95; transform: rotate(48deg) scale(1.05); }
     100% { opacity: 1; transform: rotate(60deg) scale(1.00); }
   }
 
+  /* Continuous 360° spin + pulse COMBINED (no override bug) */
+  .beamSpinPulse{
+    animation:
+      beamSpin 4.4s linear infinite,
+      beamPulse 1.15s ease-in-out infinite;
+  }
+  @keyframes beamSpin{
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes beamPulse{
+    0%,100% { opacity: 0.75; }
+    50%     { opacity: 1; }
+  }
+
   /* Beam layer tuning */
-  #beamGroup .beam.outer { opacity: 0.55; }
-  #beamGroup .beam.mid   { opacity: 0.60; }
-  #beamGroup .beam.core  { opacity: 0.98; mix-blend-mode: screen; }
+  #beamGroup .beam.outer { opacity: 0.58; }
+  #beamGroup .beam.mid   { opacity: 0.62; }
+  #beamGroup .beam.core  { opacity: 1.00; }
 
   /* ==========================
-     Glitter (MAX only) – dense + floating
+     Glitter (MAX only)
      ========================== */
 
   .gWrap{
@@ -216,3 +210,4 @@
     left:0; top:0;
     will-change: transform;
     animation: gWander var(--wanderDur) ease-in-out infinite alternate;
+    animation-delay: var(--wanderDelay);
