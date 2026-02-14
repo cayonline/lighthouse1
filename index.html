@@ -8,17 +8,9 @@
 body{
     margin:0;
     overflow:hidden;
-    background:black;
     font-family:Arial, sans-serif;
+    background:linear-gradient(to top,#020611,#0a1f3f 60%,#123c6b);
     color:white;
-}
-
-/* Night Sky */
-.sky{
-    position:fixed;
-    width:100%;
-    height:100%;
-    background:radial-gradient(circle at 50% 20%, #0a1a2f, #000814 70%);
 }
 
 /* Stars */
@@ -31,52 +23,61 @@ body{
     opacity:0.8;
 }
 
-/* Lighthouse */
+/* Ocean Glow Horizon */
+.horizon{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    height:35%;
+    background:linear-gradient(to top, #001018, transparent);
+}
+
+/* Lighthouse Base */
 .lighthouse{
     position:absolute;
     bottom:0;
     left:50%;
     transform:translateX(-50%);
-    width:120px;
-    height:350px;
-    background:linear-gradient(to top,#222,#444);
-    border-radius:60px 60px 10px 10px;
-    box-shadow:0 0 30px rgba(255,255,255,0.1);
+    width:140px;
+    height:380px;
+    background:linear-gradient(to top,#2a2a2a,#555);
+    border-radius:70px 70px 15px 15px;
+    box-shadow:0 0 40px rgba(255,255,200,0.1);
 }
 
-/* Light Chamber */
-.chamber{
+/* Light Room */
+.light-room{
     position:absolute;
-    top:-40px;
+    top:-50px;
     left:50%;
     transform:translateX(-50%);
-    width:140px;
-    height:80px;
-    background:#111;
+    width:170px;
+    height:90px;
+    background:linear-gradient(to top,#222,#444);
     border-radius:10px;
 }
 
 /* Rotating Beam */
 .beam{
     position:absolute;
-    top:-20px;
+    top:-10px;
     left:50%;
-    transform-origin:center left;
     width:900px;
-    height:300px;
+    height:400px;
+    transform-origin:left center;
     background:radial-gradient(ellipse at left,
         rgba(255,255,230,0.95) 0%,
-        rgba(255,255,200,0.5) 40%,
-        rgba(255,255,200,0.2) 60%,
+        rgba(255,255,200,0.5) 30%,
+        rgba(255,255,200,0.2) 55%,
         transparent 80%);
     animation:rotate 8s linear infinite;
-    opacity:0.25;
+    opacity:0.3;
     pointer-events:none;
 }
 
 @keyframes rotate{
-    from{transform:translateX(0) rotate(0deg);}
-    to{transform:translateX(0) rotate(360deg);}
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
 }
 
 /* Energy Bar */
@@ -86,32 +87,32 @@ body{
     left:50%;
     transform:translateX(-50%);
     width:70%;
-    height:28px;
+    height:30px;
     background:#111;
     border-radius:20px;
     overflow:hidden;
-    box-shadow:0 0 15px rgba(255,255,255,0.2);
+    box-shadow:0 0 20px rgba(255,255,255,0.2);
 }
 
 .fill{
     height:100%;
     width:0%;
-    background:linear-gradient(to right,cyan,gold);
-    transition:width 0.15s linear;
+    background:linear-gradient(to right,#00eaff,#ffd700);
+    transition:width 0.1s linear;
 }
 
-/* Button */
+/* Boost Button */
 button{
     position:fixed;
-    bottom:90px;
+    bottom:95px;
     left:50%;
     transform:translateX(-50%);
-    padding:18px 40px;
+    padding:18px 45px;
     font-size:20px;
     font-weight:bold;
     border:none;
     border-radius:40px;
-    background:gold;
+    background:linear-gradient(to right,#ffd700,#ffae00);
     cursor:pointer;
 }
 
@@ -127,32 +128,33 @@ button:active{
     background:white;
     opacity:0;
     pointer-events:none;
+    transition:opacity 0.3s;
 }
 
-/* Spark */
+/* Glitter */
 .spark{
     position:absolute;
-    width:5px;
-    height:5px;
-    background:gold;
+    width:6px;
+    height:6px;
+    background:radial-gradient(circle, gold, transparent);
     border-radius:50%;
-    animation:spark 1.2s ease-out forwards;
+    animation:spark 1.5s ease-out forwards;
 }
 
 @keyframes spark{
     from{opacity:1; transform:scale(1);}
-    to{opacity:0; transform:translateY(-150px) scale(3);}
+    to{opacity:0; transform:translateY(-200px) scale(3);}
 }
 </style>
 </head>
 
 <body>
 
-<div class="sky" id="sky"></div>
+<div class="horizon"></div>
 
 <div class="lighthouse" id="lighthouse">
     <div class="beam" id="beam"></div>
-    <div class="chamber"></div>
+    <div class="light-room"></div>
 </div>
 
 <button onclick="boost()">CLICK TO BOOST ⚡</button>
@@ -167,24 +169,24 @@ button:active{
 let energy=0;
 let combo=1;
 let lastClick=0;
-let fullTriggered=false;
+let full=false;
 
 /* Generate stars */
-for(let i=0;i<300;i++){
-    let s=document.createElement("div");
-    s.className="star";
-    s.style.left=Math.random()*100+"%";
-    s.style.top=Math.random()*100+"%";
-    s.style.opacity=Math.random();
-    document.getElementById("sky").appendChild(s);
+for(let i=0;i<250;i++){
+    let star=document.createElement("div");
+    star.className="star";
+    star.style.left=Math.random()*100+"%";
+    star.style.top=Math.random()*60+"%";
+    star.style.opacity=Math.random();
+    document.body.appendChild(star);
 }
 
 function boost(){
-    if(fullTriggered) return;
+    if(full) return;
 
     let now=Date.now();
     if(now-lastClick<300){
-        combo+=0.3;
+        combo+=0.25;
     }else{
         combo=1;
     }
@@ -194,90 +196,75 @@ function boost(){
 
     lastClick=now;
 
-    impactEffect();
-    updateUI();
+    impact();
+    update();
 
     if(energy>=100){
-        fullTriggered=true;
-        triggerFullPower();
+        triggerFull();
     }
 }
 
-function updateUI(){
+function update(){
     document.getElementById("fill").style.width=energy+"%";
-    document.getElementById("beam").style.opacity=0.25+(energy/150);
+    document.getElementById("beam").style.opacity=0.3+(energy/150);
     document.getElementById("lighthouse").style.boxShadow=
-        "0 0 "+(energy/2)+"px rgba(255,255,200,0.8)";
+        "0 0 "+(energy/1.5)+"px rgba(255,255,200,0.8)";
 }
 
 /* Decay */
 setInterval(()=>{
-    if(fullTriggered) return;
-    energy-=0.15;
+    if(full) return;
+    energy-=0.12;
     if(energy<0) energy=0;
-    updateUI();
+    update();
 },100);
 
-/* Impact */
-function impactEffect(){
-    screenShake();
-    createSpark();
+function impact(){
+    shake();
+    sparkle(12);
 }
 
-function screenShake(){
+function shake(){
     document.body.style.transform=
-        "translate("+(Math.random()*8-4)+"px,"+(Math.random()*8-4)+"px)";
-    setTimeout(()=>document.body.style.transform="translate(0,0)",80);
+        "translate("+(Math.random()*6-3)+"px,"+(Math.random()*6-3)+"px)";
+    setTimeout(()=>document.body.style.transform="translate(0,0)",70);
 }
 
-function createSpark(){
-    for(let i=0;i<8;i++){
+function sparkle(amount){
+    for(let i=0;i<amount;i++){
         let s=document.createElement("div");
         s.className="spark";
-        s.style.left=(window.innerWidth/2 + (Math.random()*200-100))+"px";
+        s.style.left=(window.innerWidth/2 + (Math.random()*250-125))+"px";
         s.style.top=(window.innerHeight*0.55)+"px";
-        document.body.appendChild(s);
-        setTimeout(()=>s.remove(),1200);
-    }
-}
-
-/* FULL POWER */
-function triggerFullPower(){
-    let flash=document.getElementById("flash");
-    flash.style.opacity=1;
-    setTimeout(()=>flash.style.opacity=0,500);
-
-    document.getElementById("beam").style.opacity=1;
-
-    glitterStorm();
-    cinematicZoom();
-
-    setTimeout(resetExperience,8000);
-}
-
-function glitterStorm(){
-    for(let i=0;i<300;i++){
-        let s=document.createElement("div");
-        s.className="spark";
-        s.style.left=Math.random()*window.innerWidth+"px";
-        s.style.top=Math.random()*window.innerHeight+"px";
         document.body.appendChild(s);
         setTimeout(()=>s.remove(),1500);
     }
 }
 
-function cinematicZoom(){
+function triggerFull(){
+    full=true;
+
+    let flash=document.getElementById("flash");
+    flash.style.opacity=1;
+    setTimeout(()=>flash.style.opacity=0,400);
+
+    document.getElementById("beam").style.opacity=1;
+
+    sparkle(250);
+
     document.getElementById("lighthouse").style.transform=
-        "translateX(-50%) scale(1.2)";
+        "translateX(-50%) scale(1.15)";
+
+    setTimeout(reset,7000);
 }
 
-function resetExperience(){
+function reset(){
     energy=0;
     combo=1;
-    fullTriggered=false;
+    full=false;
     document.getElementById("lighthouse").style.transform=
         "translateX(-50%) scale(1)";
-    updateUI();
+    update();
 }
 </script>
 
