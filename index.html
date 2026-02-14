@@ -165,44 +165,7 @@
   button:active{ transform:scale(0.96); }
 
   /* ==========================
-     BEAM: FIXED animation stacking
-     ========================== */
-
-  #beamGroup{ opacity: 0; }
-
-  /* One-time blast at MAX */
-  .beamBlast{
-    animation: beamBlast 900ms cubic-bezier(.2,.9,.2,1) 1;
-  }
-  @keyframes beamBlast{
-    0%   { opacity: 0; transform: rotate(0deg) scale(0.95); }
-    18%  { opacity: 1; transform: rotate(18deg) scale(1.12); }
-    60%  { opacity: 0.95; transform: rotate(48deg) scale(1.05); }
-    100% { opacity: 1; transform: rotate(60deg) scale(1.00); }
-  }
-
-  /* Continuous 360° spin + pulse COMBINED (no override bug) */
-  .beamSpinPulse{
-    animation:
-      beamSpin 4.4s linear infinite,
-      beamPulse 1.15s ease-in-out infinite;
-  }
-  @keyframes beamSpin{
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-  @keyframes beamPulse{
-    0%,100% { opacity: 0.75; }
-    50%     { opacity: 1; }
-  }
-
-  /* Beam layer tuning */
-  #beamGroup .beam.outer { opacity: 0.58; }
-  #beamGroup .beam.mid   { opacity: 0.62; }
-  #beamGroup .beam.core  { opacity: 1.00; }
-
-  /* ==========================
-     Glitter (MAX only)
+     Glitter (MAX only) – dense + floating
      ========================== */
 
   .gWrap{
@@ -211,3 +174,29 @@
     will-change: transform;
     animation: gWander var(--wanderDur) ease-in-out infinite alternate;
     animation-delay: var(--wanderDelay);
+    filter: drop-shadow(0 0 18px rgba(255, 215, 0, .42));
+  }
+
+  .gSpark{
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,215,0,0.95) 28%, rgba(255,215,0,0) 70%);
+    box-shadow: 0 0 calc(var(--size) * 1.5) rgba(255, 215, 0, 0.55);
+    will-change: opacity, transform, filter;
+    animation:
+      gShimmer var(--shimDur) ease-in-out infinite,
+      gBlink   var(--blinkDur) steps(2, end) infinite,
+      gSpin    var(--spinDur) linear infinite;
+    animation-delay: var(--shimDelay), var(--blinkDelay), var(--spinDelay);
+  }
+
+  .gSpark.star{
+    border-radius:0;
+    clip-path: polygon(
+      50% 0%,
+      61% 35%,
+      98% 35%,
+      68% 57%,
+      79% 91%,
+      50% 70%,
