@@ -1,281 +1,164 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- ✅ updated for safe-area support on iOS -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Lighthouse Power</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lighthouse Power</title>
 
-  <style>
-    :root{
-      --gold1:#d19e1d;
-      --gold2:#ffd86e;
-      --gold3:#e3a812;
-      --warm:#fff3b0;
-    }
+<style>
+  :root{
+    --gold1:#d19e1d;
+    --gold2:#ffd86e;
+    --gold3:#e3a812;
+    --warm:#fff3b0;
+  }
 
-    body{
-      margin:0;
-      background: radial-gradient(ellipse at center, #0b0b0b 0%, #000 60%, #000 100%);
-      overflow:hidden;
-      font-family:Arial, sans-serif;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
+  body{
+    margin:0;
+    background: radial-gradient(ellipse at center, #0b0b0b 0%, #000 60%, #000 100%);
+    overflow:hidden;
+    font-family:Arial, sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    color:white;
+  }
 
-      /* ✅ mobile-friendly viewport height (prevents bottom cut off) */
-      min-height: 100dvh; /* instead of height:100vh */ /* [3](https://cathaypacificairways.sharepoint.com/sites/LIBSYSe-Resources/Shared%20Documents/FOP/foprl/Archive/20220816%20GBB777ER/GBB777ER.AV.33.pdf?web=1) */
+  .wrapper{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px; /* ✅ was 14px — tighter so the button sits higher */
+    width:min(520px, 92vw);
+    transform: translateZ(0);
+  }
 
-      /* ✅ keep content above the iPhone home indicator / safe area */
-      padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); /* [2](https://mungfali.com/explore/Lighthouse-SVG)[1](https://www.svgrepo.com/vectors/Lighthouse/) */
+  /* Full-screen layers */
+  #glitterLayer, #impactFlash{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+  }
 
-      color:white;
-    }
+  /* Screen flash (MAX impact) */
+  #impactFlash{
+    opacity:0;
+    background:
+      radial-gradient(circle at 50% 45%,
+        rgba(255, 244, 200, 0.85) 0%,
+        rgba(255, 215, 120, 0.35) 18%,
+        rgba(255, 190, 60, 0.12) 35%,
+        rgba(0,0,0,0) 70%);
+    mix-blend-mode: screen;
+  }
+  #impactFlash.flash{
+    animation: screenFlash 650ms ease-out 1;
+  }
+  @keyframes screenFlash{
+    0%   { opacity:0; }
+    12%  { opacity:1; }
+    55%  { opacity:0.28; }
+    100% { opacity:0; }
+  }
 
-    .wrapper{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:14px;
-      width:min(520px, 92vw);
-      transform: translateZ(0);
-    }
+  /* Shake (MAX impact) */
+  .shakeOnce{
+    animation: shake 520ms cubic-bezier(.36,.07,.19,.97) both;
+  }
+  @keyframes shake{
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d( 2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d( 4px, 0, 0); }
+  }
 
-    /* Full-screen layers */
-    #glitterLayer, #impactFlash{
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-    }
+  /* Lighthouse sizing */
+  .lighthouse{
+    width: clamp(320px, 42vw, 420px);
+    height: clamp(520px, 62vh, 640px);
+    transition: filter 200ms ease;
+  }
 
-    /* Screen flash (MAX impact) */
-    #impactFlash{
-      opacity:0;
-      background:
-        radial-gradient(circle at 50% 45%,
-          rgba(255, 244, 200, 0.85) 0%,
-          rgba(255, 215, 120, 0.35) 18%,
-          rgba(255, 190, 60, 0.12) 35%,
-          rgba(0,0,0,0) 70%);
-      mix-blend-mode: screen;
-    }
-    #impactFlash.flash{
-      animation: screenFlash 650ms ease-out 1;
-    }
-    @keyframes screenFlash{
-      0%   { opacity:0; }
-      12%  { opacity:1; }
-      55%  { opacity:0.28; }
-      100% { opacity:0; }
-    }
+  /* Progress / level bar */
+  .levelWrap{
+    width: min(440px, 86vw);
+    margin-top: 4px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    align-items:stretch;
+  }
 
-    /* Shake (MAX impact) */
-    .shakeOnce{
-      animation: shake 520ms cubic-bezier(.36,.07,.19,.97) both;
-    }
-    @keyframes shake{
-      10%, 90% { transform: translate3d(-1px, 0, 0); }
-      20%, 80% { transform: translate3d( 2px, 0, 0); }
-      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-      40%, 60% { transform: translate3d( 4px, 0, 0); }
-    }
+  .levelHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:14px;
+    opacity:0.92;
+    letter-spacing:0.2px;
+  }
 
-    /* Lighthouse sizing */
-    .lighthouse{
-      width: clamp(320px, 42vw, 420px);
-      height: clamp(520px, 62vh, 640px);
-      transition: filter 200ms ease;
-    }
+  .barOuter{
+    position:relative;
+    height: 16px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12),
+                inset 0 2px 10px rgba(0,0,0,0.55);
+    overflow:hidden;
+  }
 
-    /* Progress / level bar */
-    .levelWrap{
-      width: min(440px, 86vw);
-      margin-top: 4px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      align-items:stretch;
-    }
-
-    .levelHeader{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      font-size:14px;
-      opacity:0.92;
-      letter-spacing:0.2px;
-    }
-
-    .barOuter{
-      position:relative;
-      height: 16px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.12);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12),
-                  inset 0 2px 10px rgba(0,0,0,0.55);
-      overflow:hidden;
-    }
-
-    .barOuter::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        repeating-linear-gradient(
-          to right,
-          rgba(255,255,255,0.22) 0px,
-          rgba(255,255,255,0.22) 1px,
-          rgba(0,0,0,0) 1px,
-          rgba(0,0,0,0) 44px
-        );
-      opacity:0.22;
-      pointer-events:none;
-    }
-
-    .barInner{
-      height:100%;
-      width:0%;
-      border-radius:999px;
-      background: linear-gradient(to right, var(--gold1), var(--gold2), var(--gold3));
-      box-shadow: 0 0 18px rgba(255, 215, 0, 0.55);
-      transition: width 180ms ease-out;
-    }
-
-    .barCap{
-      position:absolute;
-      top:50%;
-      transform:translateY(-50%);
-      right:8px;
-      font-size:11px;
-      opacity:0.8;
-    }
-
-    .levelFooter{
-      text-align:center;
-      font-size:13px;
-      opacity:0.92;
-    }
-
-    /* Button */
-    button{
-      padding:16px 40px;
-      font-size:18px;
-      font-weight:bold;
-      border:none;
-      border-radius:40px;
-      background: linear-gradient(to right, #ffdf6e, #ffb300);
-      color:#1a1400;
-      cursor:pointer;
-      box-shadow: 0 10px 30px rgba(255, 179, 0, 0.18);
-    }
-    button:active{ transform:scale(0.96); }
-
-    /* ==========================
-       Glitter (MAX only)
-       More + bigger + floating
-       ========================== */
-    .gWrap{
-      position:absolute;
-      left:0; top:0;
-      will-change: transform;
-      animation: gWander var(--wanderDur) ease-in-out infinite alternate;
-      animation-delay: var(--wanderDelay);
-      filter: drop-shadow(0 0 18px rgba(255, 215, 0, .42));
-    }
-
-    .gSpark{
-      width: var(--size);
-      height: var(--size);
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,215,0,0.95) 28%, rgba(255,215,0,0) 70%);
-      box-shadow: 0 0 calc(var(--size) * 1.5) rgba(255, 215, 0, 0.55);
-      will-change: opacity, transform, filter;
-      animation:
-        gShimmer var(--shimDur) ease-in-out infinite,
-        gBlink   var(--blinkDur) steps(2, end) infinite,
-        gSpin    var(--spinDur) linear infinite;
-      animation-delay: var(--shimDelay), var(--blinkDelay), var(--spinDelay);
-    }
-
-    .gSpark.star{
-      border-radius:0;
-      clip-path: polygon(
-        50% 0%,
-        61% 35%,
-        98% 35%,
-        68% 57%,
-        79% 91%,
-        50% 70%,
-        21% 91%,
-        32% 57%,
-        2% 35%,
-        39% 35%
+  .barOuter::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      repeating-linear-gradient(
+        to right,
+        rgba(255,255,255,0.22) 0px,
+        rgba(255,255,255,0.22) 1px,
+        rgba(0,0,0,0) 1px,
+        rgba(0,0,0,0) 44px
       );
-      background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,220,120,0.95) 35%, rgba(255,215,0,0) 72%);
-      box-shadow: 0 0 calc(var(--size) * 1.9) rgba(255, 215, 0, 0.7);
-    }
+    opacity:0.22;
+    pointer-events:none;
+  }
 
-    @keyframes gWander{
-      0%   { transform: translate3d(0, 0, 0); opacity: 0.9; }
-      100% { transform: translate3d(var(--dx), var(--dy), 0); opacity: 1; }
-    }
+  .barInner{
+    height:100%;
+    width:0%;
+    border-radius:999px;
+    background: linear-gradient(to right, var(--gold1), var(--gold2), var(--gold3));
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.55);
+    transition: width 180ms ease-out;
+  }
 
-    @keyframes gShimmer{
-      0%,100% { opacity: 0.35; transform: scale(0.85); filter: brightness(0.95); }
-      50%     { opacity: 1;    transform: scale(1.20); filter: brightness(1.35); }
-    }
+  .barCap{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    right:8px;
+    font-size:11px;
+    opacity:0.8;
+  }
 
-    @keyframes gBlink{
-      0%, 72%  { visibility: visible; }
-      73%, 100%{ visibility: hidden; }
-    }
+  .levelFooter{
+    text-align:center;
+    font-size:13px;
+    opacity:0.92;
+  }
 
-    @keyframes gSpin{
-      from{ transform: rotate(0deg); }
-      to  { transform: rotate(360deg); }
-    }
+  /* Button */
+  button{
+    padding:16px 40px;
+    font-size:18px;
+    font-weight:bold;
+    border:none;
+    border-radius:40px;
+    background: linear-gradient(to right, #ffdf6e, #ffb300);
+    color:#1a1400;
+    cursor:pointer;
+    box-shadow: 0 10px 30px rgba(255, 179, 0, 0.18);
 
-    /* One-time MAX burst particles */
-    .burst{
-      position:absolute;
-      border-radius:50%;
-      background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,215,0,0.95) 28%, rgba(255,215,0,0) 70%);
-      box-shadow: 0 0 40px rgba(255,215,0,0.85);
-      will-change: transform, opacity;
-      animation: burstOut 950ms ease-out forwards;
-    }
-    @keyframes burstOut{
-      0%   { transform: translate3d(0,0,0) scale(0.6); opacity:0; }
-      18%  { opacity:1; }
-      100% { transform: translate3d(var(--bx), var(--by), 0) scale(1.25); opacity:0; }
-    }
-
-    /* ✅ MOBILE FIX: move the button up + compress layout */
-    @media (max-width: 480px), (max-height: 760px) {
-      .wrapper{ gap: 10px; }
-      .lighthouse{ height: clamp(460px, 56vh, 560px); }
-      button{
-        margin-top: -10px;     /* pulls button upward */
-        padding:14px 36px;     /* slightly smaller for mobile */
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-<div id="impactFlash"></div>
-<div id="glitterLayer"></div>
-
-<div class="wrapper" id="wrap">
-
-  <!-- your existing HTML / SVG / JS stays the same below this point -->
-  <!-- (I’m not changing your SVG or JS since you only asked to move the button up) -->
-
-  <!-- ... keep the rest of your original code exactly as-is ... -->
-
-</div>
-
-</body>
-</html>
