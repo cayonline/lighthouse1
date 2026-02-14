@@ -2,20 +2,29 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lighthouse Power Up</title>
+<title>Lighthouse Power</title>
 
 <style>
 body{
     margin:0;
-    overflow:hidden;
     background:black;
+    overflow:hidden;
     font-family:Arial, sans-serif;
     display:flex;
-    justify-content:center;
-    align-items:center;
     flex-direction:column;
+    align-items:center;
+    justify-content:center;
     height:100vh;
     color:white;
+}
+
+/* Wrapper spacing adjusted */
+.wrapper{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:25px; /* smaller gap so button moves up */
 }
 
 /* Glitter Layer */
@@ -32,40 +41,34 @@ body{
 .glitter{
     position:absolute;
     border-radius:50%;
-    opacity:0.9;
-    animation:floatUp 6s linear forwards;
+    opacity:0.95;
+    animation:moveParticle 5s linear forwards;
 }
 
-@keyframes floatUp{
+@keyframes moveParticle{
     from{
-        transform:translateY(0);
+        transform:translate(0,0);
         opacity:1;
     }
     to{
-        transform:translateY(-200px);
+        transform:translate(var(--x), var(--y));
         opacity:0;
     }
 }
 
-/* Lighthouse Image */
+/* Lighthouse */
 .lighthouse{
-    position:relative;
-    z-index:2;
-}
-
-.lighthouse img{
     width:280px;
-    transition:all 0.3s ease;
+    height:450px;
 }
 
 /* Button */
 button{
-    margin-top:40px;
     padding:16px 40px;
     font-size:18px;
     font-weight:bold;
     border:none;
-    border-radius:30px;
+    border-radius:40px;
     background:linear-gradient(to right,#00ffff,#00aaff);
     cursor:pointer;
 }
@@ -80,76 +83,127 @@ button:active{
 
 <div id="glitterLayer"></div>
 
+<div class="wrapper">
+
 <div class="lighthouse">
-    <img src="lighthouse.png" id="lighthouseImg">
+<svg viewBox="0 0 200 400" width="100%" height="100%">
+
+    <defs>
+        <linearGradient id="powerGradient" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#00ffff"/>
+            <stop offset="100%" stop-color="#ffffff"/>
+        </linearGradient>
+    </defs>
+
+    <!-- Tower -->
+    <path d="M70 380 L130 380 L120 150 L80 150 Z"
+          fill="#eeeeee"/>
+
+    <!-- Power fill -->
+    <rect id="powerFill" x="80" y="380" width="40" height="0"
+          fill="url(#powerGradient)" opacity="0.9"/>
+
+    <!-- Stripes -->
+    <rect x="70" y="250" width="60" height="20" fill="#00ffff"/>
+    <rect x="70" y="200" width="60" height="20" fill="#00ffff"/>
+
+    <!-- Lantern -->
+    <rect x="60" y="120" width="80" height="40" fill="#222"/>
+    <circle id="topLight" cx="100" cy="140" r="15"
+            fill="#ffffff"/>
+
+</svg>
 </div>
 
 <button onclick="lightUp()">LIGHT UP ✨</button>
 
+</div>
+
 <script>
 let energy = 0;
 let maxEnergy = 100;
-let glitterInterval = null;
+let glitterStarted = false;
+
+/* Rainbow color palette */
+const colors = [
+    "#00ffff", // cyan
+    "#ffd700", // gold
+    "#ff4dff", // pink
+    "#a64dff", // purple
+    "#3399ff", // blue
+    "#ff9933", // orange
+    "#ffffff"  // white
+];
 
 function lightUp(){
 
     if(energy < maxEnergy){
         energy += 5;
         if(energy > maxEnergy) energy = maxEnergy;
-        updateLighthouse();
+        updatePower();
     }
 
-    if(energy >= maxEnergy && !glitterInterval){
+    if(energy >= maxEnergy && !glitterStarted){
+        glitterStarted = true;
         startGlitterStorm();
     }
 }
 
-function updateLighthouse(){
+function updatePower(){
 
-    let intensity = energy / maxEnergy;
+    let percent = energy / maxEnergy;
+    let fillHeight = 230 * percent;
+    let fillY = 380 - fillHeight;
 
-    let img = document.getElementById("lighthouseImg");
+    let fill = document.getElementById("powerFill");
+    fill.setAttribute("height", fillHeight);
+    fill.setAttribute("y", fillY);
 
-    // Gradually brighten image
-    img.style.filter = `
-        brightness(${1 + intensity*1.5})
-        drop-shadow(0 0 ${20 + intensity*80}px rgba(0,255,255,${0.5+intensity*0.5}))
-    `;
+    document.querySelector(".lighthouse svg")
+        .style.filter =
+        "drop-shadow(0 0 " + (20 + percent*80) + "px rgba(0,255,255," + (0.5+percent*0.5) + "))";
 }
 
-/* Start continuous flowing glitters */
+/* Glitter from all directions */
 function startGlitterStorm(){
 
-    glitterInterval = setInterval(()=>{
-        createGlitters(6);
+    setInterval(()=>{
+        createParticles(10);
     },200);
 }
 
-/* Create flowing glitter */
-function createGlitters(amount){
+function createParticles(amount){
 
     let layer = document.getElementById("glitterLayer");
 
     for(let i=0;i<amount;i++){
 
         let size = 20 + Math.random()*40;
-        let color = Math.random()>0.5 ? "#00ffff" : "#ffd700";
+        let color = colors[Math.floor(Math.random()*colors.length)];
 
-        let g = document.createElement("div");
-        g.className = "glitter";
+        let p = document.createElement("div");
+        p.className = "glitter";
 
-        g.style.width = size + "px";
-        g.style.height = size + "px";
+        p.style.width = size+"px";
+        p.style.height = size+"px";
+        p.style.background = "radial-gradient(circle,"+color+",transparent)";
+        p.style.boxShadow = "0 0 35px "+color;
 
-        g.style.left = Math.random()*window.innerWidth + "px";
-        g.style.top = window.innerHeight + "px";
+        let startX = Math.random()*window.innerWidth;
+        let startY = Math.random()*window.innerHeight;
 
-        g.style.background = "radial-gradient(circle,"+color+",transparent)";
-        g.style.boxShadow = "0 0 30px "+color;
+        p.style.left = startX + "px";
+        p.style.top = startY + "px";
 
-        layer.appendChild(g);
+        let moveX = (Math.random()-0.5)*700;
+        let moveY = (Math.random()-0.5)*700;
 
-        setTimeout(()=>g.remove(),6000);
+        p.style.setProperty('--x', moveX+"px");
+        p.style.setProperty('--y', moveY+"px");
+
+        layer.appendChild(p);
+
+        setTimeout(()=>p.remove(),5000);
     }
 }
 </script>
