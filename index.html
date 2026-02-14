@@ -2,269 +2,155 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cinematic Lighthouse Boost</title>
+<title>Lighthouse Power Up</title>
 
 <style>
 body{
     margin:0;
     overflow:hidden;
+    background:black;
     font-family:Arial, sans-serif;
-    background:linear-gradient(to top,#020611,#0a1f3f 60%,#123c6b);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    height:100vh;
     color:white;
 }
 
-/* Stars */
-.star{
-    position:absolute;
-    width:2px;
-    height:2px;
-    background:white;
-    border-radius:50%;
-    opacity:0.8;
-}
-
-/* Ocean Glow Horizon */
-.horizon{
+/* Glitter Layer */
+#glitterLayer{
     position:fixed;
-    bottom:0;
     width:100%;
-    height:35%;
-    background:linear-gradient(to top, #001018, transparent);
-}
-
-/* Lighthouse Base */
-.lighthouse{
-    position:absolute;
-    bottom:0;
-    left:50%;
-    transform:translateX(-50%);
-    width:140px;
-    height:380px;
-    background:linear-gradient(to top,#2a2a2a,#555);
-    border-radius:70px 70px 15px 15px;
-    box-shadow:0 0 40px rgba(255,255,200,0.1);
-}
-
-/* Light Room */
-.light-room{
-    position:absolute;
-    top:-50px;
-    left:50%;
-    transform:translateX(-50%);
-    width:170px;
-    height:90px;
-    background:linear-gradient(to top,#222,#444);
-    border-radius:10px;
-}
-
-/* Rotating Beam */
-.beam{
-    position:absolute;
-    top:-10px;
-    left:50%;
-    width:900px;
-    height:400px;
-    transform-origin:left center;
-    background:radial-gradient(ellipse at left,
-        rgba(255,255,230,0.95) 0%,
-        rgba(255,255,200,0.5) 30%,
-        rgba(255,255,200,0.2) 55%,
-        transparent 80%);
-    animation:rotate 8s linear infinite;
-    opacity:0.3;
+    height:100%;
+    top:0;
+    left:0;
     pointer-events:none;
 }
 
-@keyframes rotate{
-    from{transform:rotate(0deg);}
-    to{transform:rotate(360deg);}
+/* Flowing Glitter */
+.glitter{
+    position:absolute;
+    border-radius:50%;
+    opacity:0.9;
+    animation:floatUp 6s linear forwards;
 }
 
-/* Energy Bar */
-.bar{
-    position:fixed;
-    bottom:40px;
-    left:50%;
-    transform:translateX(-50%);
-    width:70%;
-    height:30px;
-    background:#111;
-    border-radius:20px;
-    overflow:hidden;
-    box-shadow:0 0 20px rgba(255,255,255,0.2);
+@keyframes floatUp{
+    from{
+        transform:translateY(0);
+        opacity:1;
+    }
+    to{
+        transform:translateY(-200px);
+        opacity:0;
+    }
 }
 
-.fill{
-    height:100%;
-    width:0%;
-    background:linear-gradient(to right,#00eaff,#ffd700);
-    transition:width 0.1s linear;
+/* Lighthouse Image */
+.lighthouse{
+    position:relative;
+    z-index:2;
 }
 
-/* Boost Button */
+.lighthouse img{
+    width:280px;
+    transition:all 0.3s ease;
+}
+
+/* Button */
 button{
-    position:fixed;
-    bottom:95px;
-    left:50%;
-    transform:translateX(-50%);
-    padding:18px 45px;
-    font-size:20px;
+    margin-top:40px;
+    padding:16px 40px;
+    font-size:18px;
     font-weight:bold;
     border:none;
-    border-radius:40px;
-    background:linear-gradient(to right,#ffd700,#ffae00);
+    border-radius:30px;
+    background:linear-gradient(to right,#00ffff,#00aaff);
     cursor:pointer;
 }
 
 button:active{
-    transform:translateX(-50%) scale(0.95);
-}
-
-/* Flash */
-.flash{
-    position:fixed;
-    width:100%;
-    height:100%;
-    background:white;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity 0.3s;
-}
-
-/* Glitter */
-.spark{
-    position:absolute;
-    width:6px;
-    height:6px;
-    background:radial-gradient(circle, gold, transparent);
-    border-radius:50%;
-    animation:spark 1.5s ease-out forwards;
-}
-
-@keyframes spark{
-    from{opacity:1; transform:scale(1);}
-    to{opacity:0; transform:translateY(-200px) scale(3);}
+    transform:scale(0.95);
 }
 </style>
 </head>
 
 <body>
 
-<div class="horizon"></div>
+<div id="glitterLayer"></div>
 
-<div class="lighthouse" id="lighthouse">
-    <div class="beam" id="beam"></div>
-    <div class="light-room"></div>
+<div class="lighthouse">
+    <img src="lighthouse.png" id="lighthouseImg">
 </div>
 
-<button onclick="boost()">CLICK TO BOOST ⚡</button>
-
-<div class="bar">
-    <div class="fill" id="fill"></div>
-</div>
-
-<div class="flash" id="flash"></div>
+<button onclick="lightUp()">LIGHT UP ✨</button>
 
 <script>
-let energy=0;
-let combo=1;
-let lastClick=0;
-let full=false;
+let energy = 0;
+let maxEnergy = 100;
+let glitterInterval = null;
 
-/* Generate stars */
-for(let i=0;i<250;i++){
-    let star=document.createElement("div");
-    star.className="star";
-    star.style.left=Math.random()*100+"%";
-    star.style.top=Math.random()*60+"%";
-    star.style.opacity=Math.random();
-    document.body.appendChild(star);
-}
+function lightUp(){
 
-function boost(){
-    if(full) return;
-
-    let now=Date.now();
-    if(now-lastClick<300){
-        combo+=0.25;
-    }else{
-        combo=1;
+    if(energy < maxEnergy){
+        energy += 5;
+        if(energy > maxEnergy) energy = maxEnergy;
+        updateLighthouse();
     }
 
-    energy+=2*combo;
-    if(energy>100) energy=100;
-
-    lastClick=now;
-
-    impact();
-    update();
-
-    if(energy>=100){
-        triggerFull();
+    if(energy >= maxEnergy && !glitterInterval){
+        startGlitterStorm();
     }
 }
 
-function update(){
-    document.getElementById("fill").style.width=energy+"%";
-    document.getElementById("beam").style.opacity=0.3+(energy/150);
-    document.getElementById("lighthouse").style.boxShadow=
-        "0 0 "+(energy/1.5)+"px rgba(255,255,200,0.8)";
+function updateLighthouse(){
+
+    let intensity = energy / maxEnergy;
+
+    let img = document.getElementById("lighthouseImg");
+
+    // Gradually brighten image
+    img.style.filter = `
+        brightness(${1 + intensity*1.5})
+        drop-shadow(0 0 ${20 + intensity*80}px rgba(0,255,255,${0.5+intensity*0.5}))
+    `;
 }
 
-/* Decay */
-setInterval(()=>{
-    if(full) return;
-    energy-=0.12;
-    if(energy<0) energy=0;
-    update();
-},100);
+/* Start continuous flowing glitters */
+function startGlitterStorm(){
 
-function impact(){
-    shake();
-    sparkle(12);
+    glitterInterval = setInterval(()=>{
+        createGlitters(6);
+    },200);
 }
 
-function shake(){
-    document.body.style.transform=
-        "translate("+(Math.random()*6-3)+"px,"+(Math.random()*6-3)+"px)";
-    setTimeout(()=>document.body.style.transform="translate(0,0)",70);
-}
+/* Create flowing glitter */
+function createGlitters(amount){
 
-function sparkle(amount){
+    let layer = document.getElementById("glitterLayer");
+
     for(let i=0;i<amount;i++){
-        let s=document.createElement("div");
-        s.className="spark";
-        s.style.left=(window.innerWidth/2 + (Math.random()*250-125))+"px";
-        s.style.top=(window.innerHeight*0.55)+"px";
-        document.body.appendChild(s);
-        setTimeout(()=>s.remove(),1500);
+
+        let size = 20 + Math.random()*40;
+        let color = Math.random()>0.5 ? "#00ffff" : "#ffd700";
+
+        let g = document.createElement("div");
+        g.className = "glitter";
+
+        g.style.width = size + "px";
+        g.style.height = size + "px";
+
+        g.style.left = Math.random()*window.innerWidth + "px";
+        g.style.top = window.innerHeight + "px";
+
+        g.style.background = "radial-gradient(circle,"+color+",transparent)";
+        g.style.boxShadow = "0 0 30px "+color;
+
+        layer.appendChild(g);
+
+        setTimeout(()=>g.remove(),6000);
     }
-}
-
-function triggerFull(){
-    full=true;
-
-    let flash=document.getElementById("flash");
-    flash.style.opacity=1;
-    setTimeout(()=>flash.style.opacity=0,400);
-
-    document.getElementById("beam").style.opacity=1;
-
-    sparkle(250);
-
-    document.getElementById("lighthouse").style.transform=
-        "translateX(-50%) scale(1.15)";
-
-    setTimeout(reset,7000);
-}
-
-function reset(){
-    energy=0;
-    combo=1;
-    full=false;
-    document.getElementById("lighthouse").style.transform=
-        "translateX(-50%) scale(1)";
-    update();
 }
 </script>
 
